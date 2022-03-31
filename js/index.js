@@ -8,13 +8,7 @@ window.onload = () => {
     y: 600,
     w: 40,
     h: 80,
-  };
-
-  const obstacle = {
-    x: 200,
-    y: 0,
-    w: 140,
-    h: 20,
+    score: 0,
   };
 
   class Obstacle {
@@ -30,7 +24,8 @@ window.onload = () => {
 
   function addObstacle() {
     obstacleArr.push(new Obstacle());
-    console.log(obstacleArr);
+    // player.score++;
+    console.log(player.score);
   }
 
   const canvas = document.getElementById("canvas");
@@ -46,24 +41,27 @@ window.onload = () => {
     ctx.drawImage(car, player.x, player.y, player.w, player.h);
   };
 
+  //This variable is the reference for how we stop adding blocks to the array when the game ends
   let int;
 
+  //This gets called when the "StartGame" button is pressed
   function startGame() {
-    console.log("START");
-    int = setInterval(addObstacle, 2000);
+    int = setInterval(addObstacle, 1700);
     animate();
   }
 
-  ctx.fillStyle = "maroon";
-
+  //This variable is the reference to the animation loop. This is called to cease animations when the game ends
   let game;
 
   function animate() {
     game = window.requestAnimationFrame(animate);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "white";
+    ctx.font = "24px sans-serif";
+    ctx.fillText(`Score: ${player.score}`, 70, 30);
     ctx.drawImage(car, player.x, player.y, player.w, player.h);
     //draw obstacle
-
+    ctx.fillStyle = "maroon";
     for (let i = 0; i < obstacleArr.length; i++) {
       ctx.fillRect(
         obstacleArr[i].x,
@@ -71,19 +69,28 @@ window.onload = () => {
         obstacleArr[i].w,
         obstacleArr[i].h
       );
-      obstacleArr[i].y += 10;
+      obstacleArr[i].y += 4;
       //this will evaluate to true or false
       let didCollide = detectCollision(player, obstacleArr[i]);
       if (didCollide) {
         gameOver();
+        break;
       }
     }
+    // player.score++;
   }
 
   function gameOver() {
-    console.log("You Died");
     window.cancelAnimationFrame(game);
     clearInterval(int);
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = "red";
+    ctx.font = "50px sans-serif";
+    ctx.fillText("GAME OVER", 100, 100);
+    ctx.fillStyle = "white";
+    ctx.font = "40px sans-serif";
+    ctx.fillText(`Final Score: ${player.score}`, 100, 300);
   }
 
   function move(e) {
